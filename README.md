@@ -1,3 +1,3 @@
 # Kiyo projects
 
-This repository contains all playground projects I am creating with [kiyo](https://github.com/angelocarly/kiyo).
+This repository contains a Rust workspace with the hobby projects I'm creating using [kiyo](https://github.com/angelocarly/kiyo).

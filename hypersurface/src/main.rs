@@ -25,13 +25,13 @@ fn main() {
 
     config.passes = Vec::from([
         Pass {
-            shader: "shaders/screen_shader.comp".to_string(),
+            shader: "hypersurface/shaders/screen_shader.comp".to_string(),
             dispatches: full_screen_dispatches,
             input_resources: Vec::from( [ 0 ]),
             output_resources: Vec::from([ 0 ]),
         },
         Pass {
-            shader: "shaders/blur.comp".to_string(),
+            shader: "hypersurface/shaders/blur.comp".to_string(),
             dispatches: full_screen_dispatches,
             input_resources: Vec::from([ 0 ]),
             output_resources: Vec::from([ 1 ]),
