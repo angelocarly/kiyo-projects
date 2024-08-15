@@ -2,5 +2,6 @@
 members = [
   "deferred",
   "hypersurface",
+  "fractal-folding",
 ]
 resolver = "2"
