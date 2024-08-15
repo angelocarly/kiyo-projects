@@ -1,19 +1,21 @@
 #version 450
 
-#define WORKGROUP_SIZE 32
+/* Kiyo data
+ * - WORKGROUP_SIZE and NUM_IMAGES are provided by the engine
+ */
+
 layout ( local_size_x = WORKGROUP_SIZE, local_size_y = WORKGROUP_SIZE, local_size_z = 1 ) in;
-
-#define hash2(p) fract(sin((p)*mat2(127.1,311.7, 269.5,183.3)) * 43758.5453123)
-#define hash3(p) fract(sin((p)*mat3(127.1,311.7, 74.7,  269.5,183.3,246.1,  113.5,271.9,124.6))*43758.5453123)
-
-layout( binding = 0, rgba8 ) uniform image2D images[2];
-
+layout( binding = 0, rgba8 ) uniform image2D images[NUM_IMAGES];
 layout( push_constant ) uniform PushConstants
 {
     float time;
     int in_image;
     int out_image;
 } constants;
+
+/*
+ * User data
+ */
 
 /**
  *  Geometry shader
@@ -34,10 +36,16 @@ struct Hit
     bool hit;
 };
 
+
+
 float sdf( in vec3 p )
 {
     return length( p ) - 0.5f;
+}
 
+vec3 normal( in vec3 p )
+{
+    return normalize( p );
 }
 
 Hit march( in vec3 ro, in vec3 rd )
@@ -50,7 +58,7 @@ Hit march( in vec3 ro, in vec3 rd )
         if( d < 0.001f )
         {
             hit.position = ro + rd * hit.t;
-            hit.normal = normalize( hit.position );
+            hit.normal = normal( hit.position );
             hit.color = palette( hit.t, vec3( 0.5f, 0.5f, 0.5f ), vec3( 0.5f, 0.5f, 0.5f ), vec3( 1.0f, 1.0f, 1.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
             hit.hit = true;
             break;
