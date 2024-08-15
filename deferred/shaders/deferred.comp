@@ -21,10 +21,20 @@ void main()
         return;
     }
 
-    vec4 pos = imageLoad( images[constants.in_image], p );
-    vec4 nor = imageLoad( images[constants.in_image + 1 ], p );
+    vec4 pos = imageLoad( images[constants.in_image], p ) * 2.0f - 1.0f;
+    bool hit = pos.a > 0.f;
+    vec4 nor = imageLoad( images[constants.in_image + 1 ], p ) * 2.0f - 1.0f;
 
-    vec4 c = nor;
+    vec4 c = vec4( 0.0f, 0.0f, 0.0f, 1.0f );
+
+    if( hit )
+    {
+        vec3 l = normalize( vec3( cos( constants.time ), -2.0f, sin( constants.time ) ) );
+        vec3 n = normalize( nor.xyz );
+        float d = max( 0.0f, dot( l, n ) );
+
+        c = vec4( vec3( d ), 1.0f );
+    }
 
     imageStore( images[constants.out_image], p, c );
 }
