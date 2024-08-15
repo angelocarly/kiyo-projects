@@ -1,10 +1,18 @@
-use kiyo::app::app::App;
+use kiyo::app::app::{App, AppConfig};
 use kiyo::app::draw_orch::{DispatchConfig, DrawConfig, Pass};
 
 fn main() {
-    let mut config = DrawConfig::new();
 
-    config.passes = Vec::from([
+    let app_config = AppConfig {
+        width: 1000,
+        height: 1000,
+        vsync: true,
+        log_fps: true,
+    };
+    let app = App::new(app_config);
+
+    let mut draw_config = DrawConfig::new();
+    draw_config.passes = Vec::from([
         Pass {
             shader: "deferred/shaders/geometry.comp".to_string(),
             dispatches: DispatchConfig::FullScreen,
@@ -19,6 +27,5 @@ fn main() {
         }
     ]);
 
-    let app = App::new(1000, 1000);
-    app.run(config);
+    app.run(draw_config);
 }

@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-kiyo = { git = "https://github.com/angelocarly/kiyo", rev = "53eaa53" }
+kiyo = { git = "https://github.com/angelocarly/kiyo", rev = "f508c5b" }
 glam = "0.28.0"
