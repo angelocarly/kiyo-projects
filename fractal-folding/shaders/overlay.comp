@@ -43,6 +43,6 @@ void main()
 
         vec3 color = palette( length( pos ), vec3( 0.0f, 0.3f, .2f ), vec3( 1.0f ), vec3( 0.8f, .3f, .2f ), vec3( 0.0f ) );
 
-        imageStore( images[ constants.out_image ], p, l * vec4( color, 1 ) + ( 1 - l ) * prev );
+        imageStore( images[ constants.out_image ], p, vec4( color, 1 ) * ( 1 - l ) * prev );
     }
 }

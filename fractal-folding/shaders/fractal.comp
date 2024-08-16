@@ -49,9 +49,9 @@ vec2 scene( vec2 p )
     for( int i = 0; i < 9; i++ )
     {
         pt.x = abs( pt.x );
-        pt = fold( pt, pi / 6. );
-        pt -= vec2( 0.2, 0.0 );
-        pt *= 3.;
+        pt = fold( pt, pi / 6.f );
+        pt -= vec2( 1.0 + sin( constants.time ) * .14f, 0.0 );
+        pt *= 2.0;
     }
 
     return pt;
@@ -73,8 +73,19 @@ void main()
         return;
     }
 
-    vec3 pos = vec3( float( p.x ) / float( screenSize.x ), float( p.y ) / float( screenSize.y ), 0.0f ) - 0.5f;
-    vec3 color = color( pos );
+    vec3 col = vec3( 0.0f );
+    for( float x = -.25f; x <= .25f; x += .5f )
+    {
+        for( float y = -.25f; y <= .25f; y += .5f )
+        {
+            vec3 pos = vec3( ( p.x + x ) / float( screenSize.x ), float( p.y + y ) / float( screenSize.y ), 0.0f ) - 0.5f;
+            pos += vec3( 0.0f, 0.4f, 0.0f );
 
-    imageStore( images[ constants.out_image ], p, vec4( color, 1 ) );
+            col += color( pos );
+        }
+    }
+
+    col /= 4.0f;
+
+    imageStore( images[ constants.out_image ], p, vec4( col, 1 ) );
 }
