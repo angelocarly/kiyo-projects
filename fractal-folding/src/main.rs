@@ -16,7 +16,13 @@ fn main() {
         Pass {
             shader: "fractal-folding/shaders/fractal.comp".to_string(),
             dispatches: DispatchConfig::FullScreen,
-            input_resources: Vec::from( [ 0 ]),
+            input_resources: Vec::from( [] ),
+            output_resources: Vec::from([ 0 ]),
+        },
+        Pass {
+            shader: "fractal-folding/shaders/overlay.comp".to_string(),
+            dispatches: DispatchConfig::FullScreen,
+            input_resources: Vec::from( []),
             output_resources: Vec::from([ 0 ]),
         },
     ]);
