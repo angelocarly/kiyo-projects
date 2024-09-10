@@ -1,0 +1,9 @@
+[package]
+name = "feedback"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+kiyo = { git = "https://github.com/angelocarly/kiyo", rev = "0419da7" }
+glam = "0.28.0"
+bytemuck = "1.18.0"

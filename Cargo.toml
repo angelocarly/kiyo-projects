@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "deferred",
+  "feedback",
   "hypersurface",
   "fractal-folding",
 ]
