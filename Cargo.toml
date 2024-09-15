@@ -4,5 +4,6 @@ members = [
   "feedback",
   "hypersurface",
   "fractal-folding",
+  "prison",
 ]
 resolver = "2"
