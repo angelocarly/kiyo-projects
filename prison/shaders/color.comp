@@ -75,7 +75,11 @@ void main()
     vec3 dir = normalize( vec3( s_p, 1.0 ) );
     Result r = raymarch( pos, dir );
 
+    // split dist into two 8-bit values
+    float d1 = fract( r.dist );
+    float d2 = floor( r.dist ) / 255.0;
+
     imageStore( images[ constants.out_image + 0 ], p, vec4( r.color, 1 ) );
-    imageStore( images[ constants.out_image + 1 ], p, vec4( r.pos, 1.f / r.dist ) );
-    imageStore( images[ constants.out_image + 2 ], p, vec4( r.normal, 1 ) );
+    imageStore( images[ constants.out_image + 1 ], p, vec4( r.pos, d1 ) );
+    imageStore( images[ constants.out_image + 2 ], p, vec4( r.normal, d2 ) );
 }
