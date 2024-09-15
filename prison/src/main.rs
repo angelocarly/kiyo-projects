@@ -24,6 +24,10 @@ fn main() {
             ImageConfig {
                 clear: ClearConfig::Color(0.0, 0.0, 0.0)
             },
+            // Output
+            ImageConfig {
+                clear: ClearConfig::Color(0.0, 0.0, 0.0)
+            },
         ]),
         passes: Vec::from([
             Pass {
@@ -31,6 +35,18 @@ fn main() {
                 dispatches: DispatchConfig::FullScreen,
                 input_resources: Vec::from([ 0 ]),
                 output_resources: Vec::from([ 0 ]),
+            },
+            Pass {
+                shader: "prison/shaders/prison.comp".to_string(),
+                dispatches: DispatchConfig::FullScreen,
+                input_resources: Vec::from([ 0 ]),
+                output_resources: Vec::from([ 0 ]),
+            },
+            Pass {
+                shader: "prison/shaders/copy.comp".to_string(),
+                dispatches: DispatchConfig::FullScreen,
+                input_resources: Vec::from([ 0 ]),
+                output_resources: Vec::from([ 3 ]),
             },
         ])
     };
