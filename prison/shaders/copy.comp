@@ -27,6 +27,11 @@ void main()
         return;
     }
 
-    vec4 color = imageLoad( images[ constants.in_image ], p );
-    imageStore( images[ constants.out_image ], p, color );
+    vec3 color = imageLoad( images[ constants.in_image + 0 ], p ).rgb;
+    vec3 pos = imageLoad( images[ constants.in_image + 1 ], p ).rgb;
+    float dist = imageLoad( images[ constants.in_image + 1 ], p ).a;
+    vec4 norm = imageLoad( images[ constants.in_image + 2 ], p );
+
+    imageStore( images[ constants.out_image ], p, vec4( color, 1 ) );
+//    imageStore( images[ constants.out_image ], p, vec4( dist ) );
 }

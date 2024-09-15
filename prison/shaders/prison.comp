@@ -25,7 +25,7 @@ vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
 
 float sdf( vec3 p )
 {
-    return length( p ) - 0.25;
+    return length( p + vec3( cos( constants.time) * .2, 0, sin( constants.time ) * .2 ) ) - 0.15;
 }
 
 // The normal of a point where sdf == 0
@@ -48,11 +48,11 @@ Result raymarch( vec3 p, vec3 d )
     {
         vec3 pos = p + d * t;
         float dist = sdf( pos );
-        if( dist < 0.001 )
+        if( dist < 0.00001 )
         {
             vec3 n = norm( pos );
             vec3 l = normalize( vec3( -1.0, -1.0, -1.0 ) );
-            vec3 c = dot( n, l ) * vec3( 1.0 );
+            vec3 c = vec3( .5f, 0.f, 1.0 );
             return Result( c, t, n, pos );
         }
         t += dist;
@@ -69,13 +69,22 @@ void main()
         return;
     }
 
+    Result prev = Result( vec3( 0.0 ), 0.0, vec3( 0.0 ), vec3( 0.0 ) );
+    prev.color = imageLoad( images[ constants.out_image + 0 ], p ).rgb;
+    prev.pos = imageLoad( images[ constants.out_image + 1 ], p ).rgb;
+    prev.dist = 1.f / imageLoad( images[ constants.out_image + 1 ], p ).a;
+    prev.normal = imageLoad( images[ constants.out_image + 2 ], p ).rgb;
+
     vec2 s_p = vec2( float( p.x ) / float( screenSize.x ), float( p.y ) / float( screenSize.y ) ) - 0.5f;
 
-    vec3 pos = vec3( 0.0, 0.0, -1.0 );
+    vec3 pos = vec3( 0.0, 0.0, -2.0 );
     vec3 dir = normalize( vec3( s_p, 1.0 ) );
     Result r = raymarch( pos, dir );
 
-    imageStore( images[ constants.out_image + 0 ], p, vec4( r.color, 1 ) );
-    imageStore( images[ constants.out_image + 1 ], p, vec4( r.pos, 1 ) );
-    imageStore( images[ constants.out_image + 2 ], p, vec4( r.normal, 1 ) );
+    if( r.dist > 0. && ( r.dist < prev.dist || prev.dist <= 0.f) )
+    {
+        imageStore(images[constants.out_image + 0], p, vec4(r.color, 1));
+        imageStore(images[constants.out_image + 1], p, vec4(r.pos, 1.f / r.dist));
+        imageStore(images[constants.out_image + 2], p, vec4(r.normal, 1));
+    }
 }

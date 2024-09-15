@@ -57,7 +57,7 @@ Result raymarch( vec3 p, vec3 d )
         }
         t += dist;
     }
-    return Result( vec3( 0.0 ), 0.0, vec3( 0.0 ), vec3( 0.0 ) );
+    return Result( vec3( 0.0 ), -1.0, vec3( 0.0 ), vec3( 0.0 ) );
 }
 
 void main()
@@ -71,11 +71,11 @@ void main()
 
     vec2 s_p = vec2( float( p.x ) / float( screenSize.x ), float( p.y ) / float( screenSize.y ) ) - 0.5f;
 
-    vec3 pos = vec3( 0.0, 0.0, -1.0 );
+    vec3 pos = vec3( 0.0, 0.0, -2.0 );
     vec3 dir = normalize( vec3( s_p, 1.0 ) );
     Result r = raymarch( pos, dir );
 
     imageStore( images[ constants.out_image + 0 ], p, vec4( r.color, 1 ) );
-    imageStore( images[ constants.out_image + 1 ], p, vec4( r.pos, 1 ) );
+    imageStore( images[ constants.out_image + 1 ], p, vec4( r.pos, 1.f / r.dist ) );
     imageStore( images[ constants.out_image + 2 ], p, vec4( r.normal, 1 ) );
 }
