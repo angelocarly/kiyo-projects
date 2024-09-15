@@ -13,7 +13,7 @@ fn main() {
     let config = DrawConfig {
         images: Vec::from([
             ImageConfig {
-                clear: ClearConfig::None
+                clear: ClearConfig::Color(0.0, 0.0, 0.0)
             },
         ]),
         passes: Vec::from([
