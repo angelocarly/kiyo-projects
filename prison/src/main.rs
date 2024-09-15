@@ -12,6 +12,15 @@ fn main() {
 
     let config = DrawConfig {
         images: Vec::from([
+            // Color
+            ImageConfig {
+                clear: ClearConfig::Color(0.0, 0.0, 0.0)
+            },
+            // Pos
+            ImageConfig {
+                clear: ClearConfig::Color(0.0, 0.0, 0.0)
+            },
+            // Normal
             ImageConfig {
                 clear: ClearConfig::Color(0.0, 0.0, 0.0)
             },
