@@ -25,7 +25,7 @@ vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
 
 float sdf( vec3 p )
 {
-    return length( p ) - 0.25;
+    return length( p ) - 20.;
 }
 
 // The normal of a point where sdf == 0
@@ -71,13 +71,14 @@ void main()
 
     vec2 s_p = vec2( float( p.x ) / float( screenSize.x ), float( p.y ) / float( screenSize.y ) ) - 0.5f;
 
-    vec3 pos = vec3( 0.0, 0.0, -2.0 );
+    vec3 pos = vec3( 0.0, 0.0, -80.0 );
     vec3 dir = normalize( vec3( s_p, 1.0 ) );
     Result r = raymarch( pos, dir );
 
     // split dist into two 8-bit values
-    float d1 = fract( r.dist );
-    float d2 = floor( r.dist ) / 255.0;
+    float d = r.dist;
+    float d1 = fract( d );
+    float d2 = floor( d ) / 255.0;
 
     imageStore( images[ constants.out_image + 0 ], p, vec4( r.color, 1 ) );
     imageStore( images[ constants.out_image + 1 ], p, vec4( r.pos, d1 ) );
