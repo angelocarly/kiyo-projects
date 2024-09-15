@@ -18,6 +18,9 @@ fn main() {
             ImageConfig {
                 clear: ClearConfig::None
             },
+            ImageConfig {
+                clear: ClearConfig::None
+            },
         ]),
         passes: Vec::from([
             Pass {
@@ -37,6 +40,24 @@ fn main() {
                 dispatches: DispatchConfig::FullScreen,
                 input_resources: Vec::from([ 1 ]),
                 output_resources: Vec::from([ 0 ]),
+            },
+            Pass {
+                shader: "feedback/shaders/post_color.comp".to_string(),
+                dispatches: DispatchConfig::FullScreen,
+                input_resources: Vec::from([ 0 ]),
+                output_resources: Vec::from([ 2 ]),
+            },
+            Pass {
+                shader: "feedback/shaders/post_points.comp".to_string(),
+                dispatches: DispatchConfig::Count(2, 3, 1),
+                input_resources: Vec::from([ 2 ]),
+                output_resources: Vec::from([ 2 ]),
+            },
+            Pass {
+                shader: "feedback/shaders/post_lines.comp".to_string(),
+                dispatches: DispatchConfig::Count(1, 2, 1),
+                input_resources: Vec::from([ 2 ]),
+                output_resources: Vec::from([ 2 ]),
             },
         ])
     };
