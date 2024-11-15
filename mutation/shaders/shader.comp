@@ -160,6 +160,8 @@ void main()
     pos = (rotation3d( vec3(-1, -1, 0), w3 ) * vec4(pos, 1)).xyz;
     pos *= .8f;
 
+    if( pos.z > 0.0f && length(vec2(pos.x, pos.y)) < .4f ) return;
+
     float c_t = pos.z * .4f;
 
     pos = pos / 2.0f + 0.5f;

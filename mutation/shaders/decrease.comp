@@ -38,5 +38,10 @@ void main()
     col -= .008f * l;
     col = vec3( max( 0.0f, col.r ), max( 0.0f, col.g ), max( 0.0f, col.b ));
 
+    vec2 rp = (vec2(p) / screenSize) * 2.0f - 1.0f;
+    float d = .4f;
+    float e = .003f;
+    if( length(rp) > d - e && length(rp) < d + e ) col = vec3(1);
+
     imageStore( images[ constants.out_image ], p, vec4( col, 1 ) );
 }
