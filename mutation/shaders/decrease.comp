@@ -1,0 +1,42 @@
+#version 450
+
+/*
+ * Kiyo data
+ * - WORKGROUP_SIZE and NUM_IMAGES are provided by the engine
+ */
+
+layout ( local_size_x = WORKGROUP_SIZE, local_size_y = WORKGROUP_SIZE, local_size_z = 1 ) in;
+layout( binding = 0, rgba8 ) uniform image2D images[NUM_IMAGES];
+layout( push_constant ) uniform PushConstants
+{
+    float time;
+    int in_image;
+    int out_image;
+} constants;
+
+/*
+ * User data
+ */
+float lum( vec3 c)
+{
+    return c.r * 0.4126 + c.g * 0.7152 + c.b * 0.3722;
+}
+
+void main()
+{
+    ivec2 p = ivec2( gl_GlobalInvocationID.xy );
+    ivec2 screenSize = imageSize( images[ constants.out_image ] );
+
+    vec3 col = imageLoad( images[ constants.out_image ], p ).rgb;
+
+    if( p.x > screenSize.x || p.y > screenSize.y )
+    {
+        return;
+    }
+
+    float l = lum(col);
+    col -= .008f * l;
+    col = vec3( max( 0.0f, col.r ), max( 0.0f, col.g ), max( 0.0f, col.b ));
+
+    imageStore( images[ constants.out_image ], p, vec4( col, 1 ) );
+}

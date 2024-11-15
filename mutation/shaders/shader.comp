@@ -1,0 +1,176 @@
+#version 450
+
+/*
+ * Kiyo data
+ * - WORKGROUP_SIZE and NUM_IMAGES are provided by the engine
+ */
+
+layout ( local_size_x = WORKGROUP_SIZE, local_size_y = WORKGROUP_SIZE, local_size_z = 1 ) in;
+layout( binding = 0, rgba8 ) uniform image2D images[NUM_IMAGES];
+layout( push_constant ) uniform PushConstants
+{
+    float time;
+    int in_image;
+    int out_image;
+} constants;
+
+/*
+ * User data
+ */
+
+vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d )
+{
+    return a + b*cos( 6.28318*(c*t+d) );
+}
+
+vec2 fold( vec2 p, float ang )
+{
+    vec2 n = vec2( cos( -ang ), sin( -ang ) );
+    p -= 2. * min( 0., dot( p, n ) ) * n;
+    return p;
+}
+
+vec2 rotate( vec2 p, float a )
+{
+    return vec2( p.x*cos( a ) - p.y*sin( a ), p.x*sin( a ) + p.y*cos( a ) );
+}
+
+float d2hline(vec2 p){
+    p.x-=max( 0.f, min( 0.08f, p.x ) );
+    return length(p);
+}
+
+vec2 scene( vec2 p )
+{
+    float pi = 3.14159;
+
+    vec2 pt = p.xy;
+
+    for( int i = 0; i < 9; i++ )
+    {
+        pt.x = abs( pt.x );
+        pt = fold( pt, pi / 6.f );
+        pt -= vec2( 1.0 + sin( constants.time ) * .14f, 0.0 );
+        pt *= 2.0;
+    }
+
+    return pt;
+}
+
+vec3 color( vec3 pos )
+{
+    float scale = 0.2;
+    float s = fract( d2hline( scene( pos.xy ) ) * scale );
+    return vec3( s );
+}
+
+float rand(vec2 co){
+    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+vec2 trace(float t)
+{
+    return vec2( cos(t * 1.0f), sin(t) ) * .5f;
+}
+
+void draw(ivec2 pos, vec3 col) {
+    int r = 4;
+    for( int x = -r; x <= r; x++ )
+    {
+        for( int y = -r; y <= r; y++ )
+        {
+            if( x * x + y * y > r * r ) continue;
+            imageStore( images[ constants.out_image ], ivec2(pos) + ivec2(x, y), vec4( col, 1 ) );
+        }
+    }
+}
+
+mat3 rotateX(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+    return mat3(
+    vec3(1, 0, 0),
+    vec3(0, c, -s),
+    vec3(0, s, c)
+    );
+}
+
+mat3 rotateY(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+    return mat3(
+    vec3(c, 0, s),
+    vec3(0, 1, 0),
+    vec3(-s, 0, c)
+    );
+}
+
+mat3 rotateZ(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+    return mat3(
+    vec3(c, -s, 0),
+    vec3(s, c, 0),
+    vec3(0, 0, 1)
+    );
+}
+
+mat4 rotation3d(vec3 axis, float angle) {
+    axis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float oc = 1.0 - c;
+
+    return mat4(
+    oc * axis.x * axis.x + c,           oc * axis.x * axis.y - axis.z * s,  oc * axis.z * axis.x + axis.y * s,  0.0,
+    oc * axis.x * axis.y + axis.z * s,  oc * axis.y * axis.y + c,           oc * axis.y * axis.z - axis.x * s,  0.0,
+    oc * axis.z * axis.x - axis.y * s,  oc * axis.y * axis.z + axis.x * s,  oc * axis.z * axis.z + c,           0.0,
+    0.0,                                0.0,                                0.0,                                1.0
+    );
+}
+
+void main()
+{
+    ivec2 p = ivec2( gl_GlobalInvocationID.xy );
+
+    ivec2 screenSize = imageSize( images[ constants.out_image ] );
+
+    vec3 col = vec3( 0.0f );
+
+    float t = constants.time;
+    t *= 2000.0f;
+    t += p.x * 0.05f;
+
+    float tm = t * 0.023f;
+    vec3 pos = vec3(cos(tm),0,sin(tm));
+    vec3 forward = vec3(sin(tm),0,-cos(tm));
+    vec3 up = vec3(0,1,0);
+    vec3 right = -pos;
+
+    vec2 traced = trace(t) * 0.12f;
+//    pos += right * traced.x;
+//    pos += up * traced.y;
+
+    float w1 = t * 0.02f;
+    float w2 = t * 0.11f;
+    float w3 = t * 0.04f;
+
+    pos = (rotation3d( vec3(0, 1, 1), w1 ) * vec4(pos, 1)).xyz;
+    pos = (rotation3d( vec3(1, 0, -1), w2 ) * vec4(pos, 1)).xyz;
+    pos = (rotation3d( vec3(-1, -1, 0), w3 ) * vec4(pos, 1)).xyz;
+    pos *= .8f;
+
+    float c_t = pos.z * .4f;
+
+    pos = pos / 2.0f + 0.5f;
+    pos *= vec3(screenSize.xy,0);
+
+    col = palette( c_t, vec3(0.5,0.5,0.5),vec3(0.5,0.5,0.5),vec3(2.0,1.0,0.0),vec3(0.5,0.20,0.25) );
+
+    if( pos.x < 0 || pos.y < 0 || pos.x > screenSize.x || pos.y > screenSize.y )
+    {
+        return;
+    }
+
+    draw(ivec2(pos), col);
+}
