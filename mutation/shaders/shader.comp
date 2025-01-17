@@ -74,7 +74,7 @@ vec2 trace(float t)
 }
 
 void draw(ivec2 pos, vec3 col) {
-    int r = 10;
+    int r = 1;
     for( int x = -r; x <= r; x++ )
     {
         for( int y = -r; y <= r; y++ )
@@ -129,6 +129,17 @@ mat4 rotation3d(vec3 axis, float angle) {
     );
 }
 
+vec3 rotate(vec3 pos, float t) {
+    float w1 = t * 0.02f;
+    float w2 = t * 0.11f;
+    float w3 = t * 0.04f;
+
+    pos = (rotation3d( vec3(0, 1, 1), w1 ) * vec4(pos, 1)).xyz;
+    pos = (rotation3d( vec3(1, 0, -1), w2 ) * vec4(pos, 1)).xyz;
+    pos = (rotation3d( vec3(-1, -1, 0), w3 ) * vec4(pos, 1)).xyz;
+    return pos;
+}
+
 void main()
 {
     ivec2 p = ivec2( gl_GlobalInvocationID.xy );
@@ -138,8 +149,8 @@ void main()
     vec3 col = vec3( 0.0f );
 
     float t = constants.time;
-    t *= 800.0f;
-    t += p.x * 0.05f;
+    t *= 100.0f;
+    t += p.x * 0.09f;
 
     float tm = t * 0.023f;
     vec3 pos = vec3(cos(tm),0,sin(tm));
@@ -151,13 +162,11 @@ void main()
 //    pos += right * traced.x;
 //    pos += up * traced.y;
 
-    float w1 = t * 0.02f;
-    float w2 = t * 0.11f;
-    float w3 = t * 0.04f;
+    float scale = .1f;
+    pos += rotate(right, t) * rand(vec2(p)) * scale;
+    pos += rotate(up, t) * rand(vec2(p)+vec2(p+0.1f)) * scale;
 
-    pos = (rotation3d( vec3(0, 1, 1), w1 ) * vec4(pos, 1)).xyz;
-    pos = (rotation3d( vec3(1, 0, -1), w2 ) * vec4(pos, 1)).xyz;
-    pos = (rotation3d( vec3(-1, -1, 0), w3 ) * vec4(pos, 1)).xyz;
+    pos = rotate( pos, t );
     pos *= .8f;
 
     if( pos.z > 0.0f && length(vec2(pos.x, pos.y)) < .5f ) return;

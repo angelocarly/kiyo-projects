@@ -40,7 +40,7 @@ void main()
 
     vec2 rp = (vec2(p) / screenSize) * 2.0f - 1.0f;
     float d = .5f;
-    float e = .003f;
+    float e = .009f;
     if( length(rp) > d - e && length(rp) < d + e ) col = vec3(1);
 
     imageStore( images[ constants.out_image ], p, vec4( col, 1 ) );
